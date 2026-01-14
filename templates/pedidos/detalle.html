@@ -1,0 +1,198 @@
+{% extends "base.html" %}
+
+{% block title %}Detalle Pedido {{ pedido.id_pedido }}{% endblock %}
+{% block page_title %}Pedido {{ pedido.id_pedido }}{% endblock %}
+
+{% block content %}
+<div class="row">
+    <!-- Información del Pedido -->
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Información del Pedido</h6>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>ID Pedido:</strong> {{ pedido.id_pedido }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Estado:</strong>
+                        <span class="badge bg-{{ 
+                            'warning' if pedido.estado.value == 'pendiente' else
+                            'info' if pedido.estado.value == 'enviado' else
+                            'success' if pedido.estado.value == 'recibido' else
+                            'danger'
+                        }}">
+                            {{ pedido.estado.value.title() }}
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Distribuidora:</strong> {{ pedido.distribuidora.nombre }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Fecha Creación:</strong> {{ pedido.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}
+                    </div>
+                </div>
+                
+                {% if pedido.fecha_entrega %}
+                <div class="row mb-3">
+                    <div class="col-md-6">
+                        <strong>Fecha Entrega:</strong> {{ pedido.fecha_entrega.strftime('%d/%m/%Y %H:%M') }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                {% if pedido.observaciones %}
+                <div class="row mb-3">
+                    <div class="col-12">
+                        <strong>Observaciones:</strong><br>
+                        {{ pedido.observaciones }}
+                    </div>
+                </div>
+                {% endif %}
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <strong>Creado Por:</strong> {{ pedido.usuario.nombre }}
+                    </div>
+                    <div class="col-md-6">
+                        <strong>Total Items:</strong> {{ pedido.total_items }}
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Items del Pedido -->
+        <div class="card shadow">
+            <div class="card-header py-3 d-flex justify-content-between align-items-center">
+                <h6 class="m-0 font-weight-bold">Items del Pedido</h6>
+                <span class="badge bg-primary">Total: ${{ "%.2f"|format(pedido.total) }}</span>
+            </div>
+            <div class="card-body">
+                {% if pedido.items %}
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>Producto</th>
+                                <th>Código</th>
+                                <th>Cantidad</th>
+                                <th>Precio Unit.</th>
+                                <th>Subtotal</th>
+                                <th>Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for item in pedido.items %}
+                            <tr>
+                                <td>{{ item.producto.nombre }}</td>
+                                <td>{{ item.producto.codigo }}</td>
+                                <td>{{ item.cantidad }}</td>
+                                <td>${{ "%.2f"|format(item.precio_unitario) }}</td>
+                                <td>${{ "%.2f"|format(item.subtotal) }}</td>
+                                <td>
+                                    <form method="POST" action="{{ url_for('main.eliminar_item_pedido', id=pedido.id, item_id=item.id) }}" 
+                                          onsubmit="return confirm('¿Está seguro de eliminar este item?')">
+                                        <button type="submit" class="btn btn-sm btn-danger">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                        <tfoot>
+                            <tr class="table-primary">
+                                <td colspan="4" class="text-end"><strong>TOTAL</strong></td>
+                                <td><strong>${{ "%.2f"|format(pedido.total) }}</strong></td>
+                                <td></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No hay items en este pedido</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Acciones -->
+    <div class="col-lg-4">
+        <!-- Agregar Item -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Agregar Item</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('main.agregar_item_pedido', id=pedido.id) }}">
+                    {{ form_item.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form_item.producto_id.label(class="form-label") }}
+                        {{ form_item.producto_id(class="form-select") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form_item.cantidad.label(class="form-label") }}
+                        {{ form_item.cantidad(class="form-control") }}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form_item.precio_unitario.label(class="form-label") }}
+                        <div class="input-group">
+                            <span class="input-group-text">$</span>
+                            {{ form_item.precio_unitario(class="form-control") }}
+                        </div>
+                    </div>
+                    
+                    {{ form_item.submit(class="btn btn-primary w-100") }}
+                </form>
+            </div>
+        </div>
+        
+        <!-- Cambiar Estado -->
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Cambiar Estado</h6>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('main.cambiar_estado_pedido', id=pedido.id) }}">
+                    {{ form_estado.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form_estado.estado.label(class="form-label") }}
+                        {{ form_estado.estado(class="form-select") }}
+                    </div>
+                    
+                    {{ form_estado.submit(class="btn btn-warning w-100") }}
+                </form>
+            </div>
+        </div>
+        
+        <!-- Acciones Rápidas -->
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Acciones</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('main.pedidos') }}" class="btn btn-secondary">
+                        <i class="fas fa-arrow-left"></i> Volver a Pedidos
+                    </a>
+                    <button type="button" class="btn btn-info" onclick="window.print()">
+                        <i class="fas fa-print"></i> Imprimir
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

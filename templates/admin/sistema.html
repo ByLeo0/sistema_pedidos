@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Información del Sistema{% endblock %}
+{% block page_title %}Información del Sistema{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Información General</h6>
+            </div>
+            <div class="card-body">
+                <table class="table table-borderless">
+                    <tr>
+                        <td><strong>Nombre del Sistema:</strong></td>
+                        <td>Sistema de Gestión de Pedidos</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Versión:</strong></td>
+                        <td>1.0.0</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Framework:</strong></td>
+                        <td>Flask 2.3.3</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Base de Datos:</strong></td>
+                        <td>SQLite</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Python:</strong></td>
+                        <td>3.7+</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Características</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                Gestión de usuarios con roles
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                Control de distribuidoras
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                Administración de productos
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                Sistema de pedidos completo
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                Interfaz web moderna
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                Panel administrativo
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                Reportes y estadísticas
+                            </li>
+                            <li class="mb-2">
+                                <i class="fas fa-check text-success"></i>
+                                Diseño responsivo
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Acciones Rápidas</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('admin.dashboard') }}" class="btn btn-primary">
+                        <i class="fas fa-tachometer-alt"></i> Dashboard Admin
+                    </a>
+                    <a href="{{ url_for('admin.usuarios') }}" class="btn btn-info">
+                        <i class="fas fa-users"></i> Gestionar Usuarios
+                    </a>
+                    <a href="{{ url_for('auth.registro') }}" class="btn btn-success">
+                        <i class="fas fa-user-plus"></i> Nuevo Usuario
+                    </a>
+                    <button type="button" class="btn btn-warning" onclick="location.reload()">
+                        <i class="fas fa-sync"></i> Reiniciar Sistema
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Soporte</h6>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Para soporte técnico o reportar problemas, contacte al administrador del sistema.
+                </p>
+                <div class="d-grid gap-2">
+                    <button type="button" class="btn btn-outline-secondary" disabled>
+                        <i class="fas fa-envelope"></i> Contactar Soporte
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

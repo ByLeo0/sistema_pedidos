@@ -1,0 +1,211 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard{% endblock %}
+{% block page_title %}Panel Administrativo{% endblock %}
+
+{% block content %}
+<!-- Estadísticas Generales -->
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Usuarios
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">{{ total_usuarios }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-users fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Administradores
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">{{ admin_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-shield fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Vendedores
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">{{ vendedor_count }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-user-tie fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Total Pedidos
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">{{ total_pedidos }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-shopping-cart fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Gráficos y Tablas -->
+<div class="row">
+    <!-- Pedidos por Estado -->
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Pedidos por Estado</h6>
+            </div>
+            <div class="card-body">
+                {% for estado, cantidad in pedidos_por_estado.items() %}
+                <div class="row no-gutters align-items-center mb-3">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">{{ estado.title() }}</div>
+                        <div class="h5 mb-0 font-weight-bold">{{ cantidad }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <div class="progress" style="width: 60px; height: 60px;">
+                            <div class="progress-bar bg-{{ 
+                                'warning' if estado == 'pendiente' else
+                                'info' if estado == 'enviado' else
+                                'success' if estado == 'recibido' else
+                                'danger'
+                            }}" role="progressbar" 
+                                 style="width: {{ (cantidad / total_pedidos * 100) if total_pedidos > 0 else 0 }}%;"
+                                 aria-valuenow="{{ cantidad }}" 
+                                 aria-valuemin="0" 
+                                 aria-valuemax="{{ total_pedidos }}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Usuarios Recientes -->
+    <div class="col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Usuarios Recientes</h6>
+            </div>
+            <div class="card-body">
+                {% if usuarios_recientes %}
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Usuario</th>
+                                <th>Rol</th>
+                                <th>Fecha</th>
+                                <th>Estado</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for usuario in usuarios_recientes %}
+                            <tr>
+                                <td>{{ usuario.nombre }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 
+                                        'primary' if usuario.is_administrador() else 'info'
+                                    }}">
+                                        {{ usuario.rol.value.title() }}
+                                    </span>
+                                </td>
+                                <td>{{ usuario.fecha_creacion.strftime('%d/%m/%Y') }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 'success' if usuario.activo else 'secondary' }}">
+                                        {{ 'Activo' if usuario.activo else 'Inactivo' }}
+                                    </span>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-users fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No hay usuarios recientes</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones Administrativas -->
+<div class="row">
+    <div class="col-12">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Acciones Administrativas</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3 mb-3">
+                        <div class="d-grid">
+                            <a href="{{ url_for('admin.usuarios') }}" class="btn btn-primary">
+                                <i class="fas fa-users"></i> Gestionar Usuarios
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="d-grid">
+                            <a href="{{ url_for('auth.registro') }}" class="btn btn-success">
+                                <i class="fas fa-user-plus"></i> Nuevo Usuario
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="d-grid">
+                            <a href="{{ url_for('main.distribuidoras') }}" class="btn btn-info">
+                                <i class="fas fa-truck"></i> Ver Distribuidoras
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-3 mb-3">
+                        <div class="d-grid">
+                            <a href="{{ url_for('admin.sistema') }}" class="btn btn-secondary">
+                                <i class="fas fa-cog"></i> Configuración
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

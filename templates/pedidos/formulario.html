@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}Nuevo Pedido{% endblock %}
+{% block page_title %}Nuevo Pedido{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-8">
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">
+                    <i class="fas fa-shopping-cart"></i>
+                    Crear Nuevo Pedido
+                </h6>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    {{ form.hidden_tag() }}
+                    
+                    <div class="mb-3">
+                        {{ form.distribuidora_id.label(class="form-label") }}
+                        {{ form.distribuidora_id(class="form-select") }}
+                        {% if form.distribuidora_id.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.distribuidora_id.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mb-3">
+                        {{ form.observaciones.label(class="form-label") }}
+                        {{ form.observaciones(class="form-control", rows="4", placeholder="Observaciones adicionales sobre el pedido...") }}
+                        {% if form.observaciones.errors %}
+                            <div class="text-danger small mt-1">
+                                {% for error in form.observaciones.errors %}
+                                    {{ error }}
+                                {% endfor %}
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i>
+                        <strong>Nota:</strong> Después de crear el pedido, podrás agregar items individualmente.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a href="{{ url_for('main.pedidos') }}" class="btn btn-secondary">
+                            <i class="fas fa-arrow-left"></i> Cancelar
+                        </a>
+                        {{ form.submit(class="btn btn-primary") }}
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

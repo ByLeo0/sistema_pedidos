@@ -1,0 +1,205 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard{% endblock %}
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Distribuidoras
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">{{ total_distribuidoras }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-truck fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Productos
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">{{ total_productos }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-boxes fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Total Pedidos
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">{{ total_pedidos }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-shopping-cart fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2 stats-card">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">
+                            Pendientes
+                        </div>
+                        <div class="h5 mb-0 font-weight-bold">{{ pedidos_pendientes }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Pedidos Recientes</h6>
+            </div>
+            <div class="card-body">
+                {% if pedidos_recientes %}
+                <div class="table-responsive">
+                    <table class="table table-bordered" id="pedidosTable">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Distribuidora</th>
+                                <th>Estado</th>
+                                <th>Total</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for pedido in pedidos_recientes %}
+                            <tr>
+                                <td>{{ pedido.id_pedido }}</td>
+                                <td>{{ pedido.distribuidora.nombre }}</td>
+                                <td>
+                                    <span class="badge bg-{{ 
+                                        'warning' if pedido.estado.value == 'pendiente' else
+                                        'info' if pedido.estado.value == 'enviado' else
+                                        'success' if pedido.estado.value == 'recibido' else
+                                        'danger'
+                                    }}">
+                                        {{ pedido.estado.value.title() }}
+                                    </span>
+                                </td>
+                                <td>${{ "%.2f"|format(pedido.total) }}</td>
+                                <td>{{ pedido.fecha_creacion.strftime('%d/%m/%Y %H:%M') }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                {% else %}
+                <div class="text-center py-4">
+                    <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                    <p class="text-muted">No hay pedidos recientes</p>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Estado de Pedidos</h6>
+            </div>
+            <div class="card-body">
+                <div class="row no-gutters align-items-center mb-3">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning">Pendientes</div>
+                        <div class="h5 mb-0 font-weight-bold">{{ pedidos_pendientes }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-warning"></i>
+                    </div>
+                </div>
+                
+                <div class="row no-gutters align-items-center mb-3">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info">Enviados</div>
+                        <div class="h5 mb-0 font-weight-bold">{{ pedidos_enviados }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-truck fa-2x text-info"></i>
+                    </div>
+                </div>
+                
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success">Recibidos</div>
+                        <div class="h5 mb-0 font-weight-bold">{{ pedidos_recibidos }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-check-circle fa-2x text-success"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        {% if current_user.is_vendedor() or current_user.is_administrador() %}
+        <div class="card shadow">
+            <div class="card-header py-3">
+                <h6 class="m-0 font-weight-bold">Acciones Rápidas</h6>
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('main.nuevo_pedido') }}" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Nuevo Pedido
+                    </a>
+                    <a href="{{ url_for('main.nueva_distribuidora') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-plus"></i> Nueva Distribuidora
+                    </a>
+                    <a href="{{ url_for('main.nuevo_producto') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-plus"></i> Nuevo Producto
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    $(document).ready(function() {
+        $('#pedidosTable').DataTable({
+            "language": {
+                "url": "//cdn.datatables.net/plug-ins/1.13.0/i18n/Spanish.json"
+            },
+            "pageLength": 5
+        });
+    });
+</script>
+{% endblock %}
